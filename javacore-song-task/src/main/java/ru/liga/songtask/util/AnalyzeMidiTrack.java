@@ -8,6 +8,8 @@ import com.leff.midi.event.meta.Lyrics;
 import com.leff.midi.event.meta.Tempo;
 import com.leff.midi.event.meta.Text;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.liga.Main;
 import ru.liga.songtask.domain.Note;
 import ru.liga.songtask.domain.NoteSign;
 
@@ -30,6 +32,12 @@ public class AnalyzeMidiTrack {
     private static boolean showLyrics = false;
     private static boolean showIntersection = false;
     private static boolean showMultiple = false;
+
+    public static void main(String[] args) {
+        String[] arg1 = {"\"D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Wrecking Ball.mid\"", "-analyze"};
+        analyze(arg1, LoggerFactory.getLogger(Main.class));
+    }
+
 
     public static void analyze(String[] args, Logger logger1) {
         //setting
@@ -55,7 +63,7 @@ public class AnalyzeMidiTrack {
         logger.debug("Enter to {}", "findVocalNoteTrack");
         try {
             logger.info("Try read mid file in path: {}", path1);
-            MidiFile midiFile = new MidiFile((new FileInputStream(path1)));
+            MidiFile midiFile = new MidiFile((new FileInputStream(path1.replaceAll("\"",""))));
             logger.info("Open file successfully");
             getTrackWithTextEvents(midiFile);
 
@@ -191,6 +199,7 @@ public class AnalyzeMidiTrack {
 
         for (Note note : vhb) {
             // counter notes
+            //to stream
             countNote++;
             int nodeNumbers = note.sign().ordinal();
             if (mapVH.get(nodeNumbers) == null) {
@@ -200,7 +209,7 @@ public class AnalyzeMidiTrack {
                 noteCounter++;
                 mapVH.put(nodeNumbers, noteCounter);
             }
-
+            //to stream
             float interval = SongUtils.tickToMs(tempo.getBpm(), resFile, note.durationTicks());
             if (mapDL.get(interval) == null) {
                 mapDL.put(interval, 1);
