@@ -60,7 +60,7 @@ public class ChangeMidiFile extends FileOperation {
             }
         }
 
-        valueTempo = oldValueTempo == 0 ? 1 : (valueTempo * 1.0f) / 100;
+        valueTempo = oldValueTempo == 0 ? 1 :1+ oldValueTempo/100f;
 
         String nameMidFile = args[0].replace("\"", "").split("\\\\")[args[0].split("\\\\").length - 1];
         nameMidFile = nameMidFile.split("\\.")[0] + " -trans " + valueTranspose + " -tempo " + oldValueTempo + ".mid";
@@ -85,8 +85,6 @@ public class ChangeMidiFile extends FileOperation {
         MidiFile midiFile1 = getMidiFile();
 
         File file = new File(newPath);
-        Controller.logger.info("New File name: {}", newPath);
-
         boolean isCreateFile;
         try {
             isCreateFile = file.createNewFile();
@@ -116,7 +114,6 @@ public class ChangeMidiFile extends FileOperation {
     private void changeEvent(MidiEvent midiEvent) {
         if (midiEvent instanceof Tempo) {
             changeTempo(midiEvent);
-            return;
         }
         if (midiEvent instanceof NoteOn || midiEvent instanceof NoteOff)
             changeNote(midiEvent);
@@ -148,6 +145,6 @@ public class ChangeMidiFile extends FileOperation {
     }
 
     private void changeTempo(MidiEvent midiEvent) {
-        ((Tempo) midiEvent).setBpm(((Tempo) midiEvent).getBpm() / valueTempo);
+        ((Tempo) midiEvent).setBpm(((Tempo) midiEvent).getBpm() * valueTempo);
     }
 }
