@@ -19,8 +19,9 @@ public class SongUtils {
 
     /**
      * Перевод тиков в миллисекунды
-     * @param bpm - количество ударов в минуту (темп)
-     * @param resolution - midiFile.getResolution()
+     *
+     * @param bpm          - количество ударов в минуту (темп)
+     * @param resolution   - midiFile.getResolution()
      * @param amountOfTick - то что переводим в миллисекунды
      * @return
      */
@@ -52,7 +53,7 @@ public class SongUtils {
         return vbNotes;
     }
 
-    static boolean isEndMarkerNote(MidiEvent event) {
+    public static boolean isEndMarkerNote(MidiEvent event) {
         if (event instanceof NoteOff) {
             return true;
         } else if (event instanceof NoteOn) {
@@ -62,7 +63,7 @@ public class SongUtils {
         }
     }
 
-    static Integer extractNoteValue(MidiEvent event) {
+    public static Integer extractNoteValue(MidiEvent event) {
         if (event instanceof NoteOff) {
             return ((NoteOff) event).getNoteValue();
         } else if (event instanceof NoteOn) {
@@ -72,8 +73,8 @@ public class SongUtils {
         }
     }
 
-    private static void playTrack() throws Exception {
-        String path="D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.mid";
+    public static void playTrack(String path) throws Exception {
+
         File midiFile = new File(path);
         Sequencer sequencer = MidiSystem.getSequencer();
         sequencer.setSequence(MidiSystem.getSequence(midiFile));

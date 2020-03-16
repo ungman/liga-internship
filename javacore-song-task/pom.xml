@@ -7,11 +7,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>javacore-song-task</artifactId>
+    <artifactId>midi-analyzer</artifactId>
     <packaging>jar</packaging>
 
-    <name>javacore-song-task</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

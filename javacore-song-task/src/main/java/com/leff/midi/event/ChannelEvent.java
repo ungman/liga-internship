@@ -50,6 +50,17 @@ public class ChannelEvent extends MidiEvent
         return mType;
     }
 
+    //changed????
+
+    public int getmValue1() {
+        return mValue1;
+    }
+
+    public void setmValue1(int mValue1) {
+        this.mValue1 = mValue1 & 0xFF;
+    }
+    //end change
+
     public void setChannel(int c)
     {
         if(c < 0)

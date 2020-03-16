@@ -1,4 +1,5 @@
 <configuration>
+
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -25,7 +26,7 @@
             <maxFileSize>10KB</maxFileSize>
         </triggeringPolicy>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%-5level] - %msg%n</pattern>
+            <pattern>%d{dd.MM HH:mm:ss.SSS} [%-5level] - %msg%n</pattern>
             <!--            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>-->
         </encoder>
     </appender>
@@ -48,6 +49,7 @@
             <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
         </encoder>
     </appender>
+
 
     <logger name="ru.liga" level="all" additivity="false">
         <appender-ref ref="Console"/>

@@ -2,34 +2,38 @@ package ru.liga.songtask.util;
 
 import com.leff.midi.MidiFile;
 import com.leff.midi.event.meta.Tempo;
+import ru.liga.songtask.domain.Controller;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URISyntaxException;
 
-abstract class MidiOperation {
+public abstract class FileOperation {
 
-    private List<String> argumentList = new ArrayList<>();
     private MidiFile midiFile;
     private Tempo tempo;
+    private String pathToJar;
 
+    public FileOperation(String path) {
+        try {
+            pathToJar = new File(FileOperation.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
-    MidiOperation(String path) {
+        Controller.logger.debug("Enter to {}", "FileOperation(String path,Logger logger)");
         setMidiFile(path);
         setTempo();
+
     }
 
-    public List<String> getArgumentList() {
-        return argumentList;
-    }
-
-    public void setArgumentList(List<String> argumentList) {
-        this.argumentList = argumentList;
+    public String getPathToJar() {
+        return pathToJar;
     }
 
     private void setTempo() {
-
+        Controller.logger.debug("Enter to {}","setTempo");
         if (midiFile == null) {
             return;
         }
@@ -46,10 +50,14 @@ abstract class MidiOperation {
     }
 
     private void setMidiFile(String path) {
+        Controller.logger.debug("Enter to {}","setMidiFile");
         try {
             midiFile = new MidiFile(new FileInputStream(path));
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            Controller.logger.info("Cant open file on path: {}",path);
+            Controller.logger.debug(e.getMessage());
+            throw new RuntimeException("Cant open file on path: "+path);
         }
     }
 
@@ -58,4 +66,6 @@ abstract class MidiOperation {
     public Tempo getTempo() {
         return tempo;
     }
+
+
 }

@@ -30,7 +30,7 @@ public class NoteOn extends ChannelEvent
 
     public int getNoteValue()
     {
-        return mValue1;
+            return mValue1;
     }
 
     public int getVelocity()
