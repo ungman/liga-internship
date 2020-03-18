@@ -20,16 +20,16 @@ public class ReflectionHelper {
     private static final Class[] defaultAnnotation = new Class[]{After.class, Before.class, Test.class};
 
 
-    public static void runTest(String packageName, Class... annClasses) throws IOException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static void runTest(String packageName,boolean enterInPackage, Class... annClasses) throws IOException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (annClasses == null || annClasses.length < 1) {
             annClasses = defaultAnnotation;
         }
-        Map<Class<?>, List<Method>> mapClassMethods = getMapClassMethods(packageName, annClasses);
+        Map<Class<?>, List<Method>> mapClassMethods = getMapClassMethods(packageName, enterInPackage,annClasses);
         for (Map.Entry<Class<?>, List<Method>> entry : mapClassMethods.entrySet()) {
 
             entry.getKey().getDeclaredConstructors();
             Object invokedObject = entry.getKey().getDeclaredConstructors()[0].newInstance();
-            System.out.println("Test ran for " +entry.getKey());
+            System.out.println("Test ran for " + entry.getKey());
             AssertCounter.init();
             List<Method> methodsBefore = entry.getValue().stream()
                     .filter(method -> method.getAnnotation(Before.class) != null)
@@ -43,24 +43,25 @@ public class ReflectionHelper {
                     .filter(method -> method.getAnnotation(Test.class) != null)
                     .collect(Collectors.toList());
 
-            runTest(invokedObject,methodsTest,methodsBefore,methodsAfter);
+            runTest(invokedObject, methodsTest, methodsBefore, methodsAfter);
 
             AssertCounter.showResult();
         }
     }
 
-    private  static  void runTest(Object invoked, List<Method> listT,List<Method> listB,List<Method> listA){
+    private static void runTest(Object invoked, List<Method> listT, List<Method> listB, List<Method> listA) {
 
         listT.stream().forEachOrdered(method -> {
             try {
-                runMethodList(invoked,listB);
+                runMethodList(invoked, listB);
                 method.invoke(invoked);
-                runMethodList(invoked,listA);
+                runMethodList(invoked, listA);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         });
     }
+
     private static void runMethodList(Object invoked, List<Method> list) {
 
         list.stream().forEachOrdered(method -> {
@@ -72,8 +73,9 @@ public class ReflectionHelper {
         });
     }
 
-    public static Map<Class<?>, List<Method>> getMapClassMethods(String packageName, Class[] annClasses) throws IOException, ClassNotFoundException {
-        return getClasses(packageName).stream()
+    public static Map<Class<?>, List<Method>> getMapClassMethods(String packageName,boolean enterInPackage, Class[] annClasses) throws IOException, ClassNotFoundException {
+
+        Map<Class<?>, List<Method>> test = getClasses(packageName,enterInPackage).stream()
                 .filter(clazz -> Arrays.stream(clazz.getDeclaredMethods())
                         .anyMatch(method -> Stream.of(annClasses).anyMatch(clazzAnn -> method.getAnnotation(clazzAnn) != null)))
                 .collect(Collectors.toMap(
@@ -82,10 +84,11 @@ public class ReflectionHelper {
                                 .filter(method -> Stream.of(annClasses)
                                         .anyMatch(clazzAnn -> method.getAnnotation(clazzAnn) != null))
                                 .collect(Collectors.toList())));
+        return test;
     }
 
 
-    private static List<Class<?>> getClasses(String packageName) throws IOException, ClassNotFoundException {
+    private static List<Class<?>> getClasses(String packageName,boolean enterInPackage) throws IOException, ClassNotFoundException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
             throw new RuntimeException("Error! not found classloader");
@@ -99,20 +102,23 @@ public class ReflectionHelper {
         }
         ArrayList<Class<?>> classes = new ArrayList<>();
         for (File dir : dirs) {
-            classes.addAll(findClasses(dir, packageName));
+            classes.addAll(findClasses(dir, packageName,enterInPackage));
         }
         return classes;
     }
 
-    private static List findClasses(File directory, String packageName) throws ClassNotFoundException {
+    private static List findClasses(File directory, String packageName,boolean enterInPackage) throws ClassNotFoundException {
         List classes = new ArrayList();
         if (!directory.exists())
             return classes;
 
         File[] files = directory.listFiles();
         for (File file : files) {
-            if (file.isDirectory() && file.getName().contains(".")) {
-                classes.addAll(findClasses(file, packageName + "." + file.getName()));
+            if (file.isDirectory()) {
+                if(enterInPackage)
+                    classes.addAll(findClasses(file, packageName + "." + file.getName(),enterInPackage));//assert !file.getName().contains(".");
+                else if(file.getName().contains("."))
+                    classes.addAll(findClasses(file, packageName + "." + file.getName(),enterInPackage));
             } else if (file.getName().endsWith(".class")) {
                 classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
             }

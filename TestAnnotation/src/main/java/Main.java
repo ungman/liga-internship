@@ -8,6 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Main {
     public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        ReflectionHelper.runTest("tests");
+        ReflectionHelper.runTest("tests",true);
     }
 }
