@@ -7,5 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+
 public @interface Test {
+    StatisticsTestLevel statisticsTestLevel() default StatisticsTestLevel.All;
+    PrintTestResult printTestResult() default PrintTestResult.AFTER_METHOD;
 }

@@ -1,8 +1,6 @@
 package tests;
 
-import util.annotation.After;
-import util.annotation.Before;
-import util.annotation.Test;
+import util.annotation.*;
 
 import static util.asserts.Assert.ownAssert;
 
@@ -22,7 +20,8 @@ public class Test2 {
         ownAssert(new String("value")).isNotNull();
         ownAssert(new String("value")).isNotNull();
     }
-    @Test
+
+    @Test(statisticsTestLevel = StatisticsTestLevel.All,printTestResult = PrintTestResult.AFTER_ASSERT)
     public void test1() {
         ownAssert(true).isTrue();
         ownAssert(false).isTrue();
