@@ -3,7 +3,7 @@ package ru.liga.songtask.domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.liga.songtask.util.CheckerArguments;
-import ru.liga.songtask.util.FileOperation;
+import ru.liga.songtask.util.MidiFileBaseOperationHelper;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 public class Controller {
 
     public static final Logger logger = LoggerFactory.getLogger(Controller.class);
-    public FileOperation classBaseOperation;
+    public MidiFileBaseOperationHelper midiFileBaseOperationHelper;
     private String pathToMidFile = "";
     private String nameMidFile = "";
 
@@ -57,14 +57,14 @@ public class Controller {
         if (typeAction.equals("analyze")) {
             logger.info("Chosen analyze {}", nameMidFile);
             if (CheckerArgumentsAnalyzeMidiFile.getInstance().checkArguments(args)) ;
-            classBaseOperation = AnalyzeMidiFile.getInstance(args, pathToMidFile);
+            midiFileBaseOperationHelper = AnalyzeMidiFile.getInstance(args, pathToMidFile);
         }
         if (typeAction.equals("change")) {
             logger.info("Chosen change {}", nameMidFile);
             if (CheckerArgumentChangeMidiFile.getInstance().checkArguments(args)) ;
-            classBaseOperation = ChangeMidiFile.getInstance(args, pathToMidFile);
+            midiFileBaseOperationHelper = ChangeMidiFile.getInstance(args, pathToMidFile);
         }
-        if (classBaseOperation == null) {
+        if (midiFileBaseOperationHelper == null) {
             logger.debug("Dont create class for operation {}", typeAction);
             throw new RuntimeException("Dont create class for operation" + typeAction);
         }
@@ -73,7 +73,7 @@ public class Controller {
     }
 
     public void makeOperations() {
-        classBaseOperation.makeOperation();
+        midiFileBaseOperationHelper.makeOperation();
     }
 
     public String getPathToMidFile() {

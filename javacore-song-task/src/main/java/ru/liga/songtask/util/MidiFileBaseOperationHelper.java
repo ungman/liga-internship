@@ -11,22 +11,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public abstract class FileOperation {
-    public static final Logger logger = LoggerFactory.getLogger(FileOperation.class);
+public abstract class MidiFileBaseOperationHelper {
+    public static final Logger logger = LoggerFactory.getLogger(MidiFileBaseOperationHelper.class);
     private MidiFile midiFile;
     private Tempo tempo;
     private String pathToJar;
 
-    public FileOperation(String path) {
+    public MidiFileBaseOperationHelper(String path) {
         try {
-            pathToJar = new File(FileOperation.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+            pathToJar = new File(MidiFileBaseOperationHelper.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        logger.debug("Enter to {}", "FileOperation(String path,Logger logger)");
+        logger.debug("Enter to {}", "MidiFileBaseOperationHelper(String path,Logger logger)");
         setMidiFile(path);
         setTempo();
-
     }
 
     public String getPathToJar() {

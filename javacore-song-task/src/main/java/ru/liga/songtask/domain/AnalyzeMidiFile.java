@@ -7,7 +7,7 @@ import com.leff.midi.event.meta.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.liga.songtask.util.AnalyzeMidFile;
-import ru.liga.songtask.util.FileOperation;
+import ru.liga.songtask.util.MidiFileBaseOperationHelper;
 import ru.liga.songtask.util.SongUtils;
 
 import java.util.*;
@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
-public class AnalyzeMidiFile extends FileOperation {
+public class AnalyzeMidiFile extends MidiFileBaseOperationHelper {
 
     public static final Logger logger = LoggerFactory.getLogger(AnalyzeMidiFile.class);
     private static Predicate<MidiEvent> predicateFindTextNode = midiEvent -> midiEvent.getTick() != 0 && midiEvent.getDelta() != 0 && midiEvent instanceof Text;

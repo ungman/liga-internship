@@ -7,12 +7,12 @@ import com.leff.midi.event.NoteOn;
 import com.leff.midi.event.meta.Tempo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.songtask.util.FileOperation;
+import ru.liga.songtask.util.MidiFileBaseOperationHelper;
 
 import java.io.File;
 import java.io.IOException;
 
-public class ChangeMidiFile extends FileOperation {
+public class ChangeMidiFile extends MidiFileBaseOperationHelper {
 
     public static final Logger logger = LoggerFactory.getLogger(ChangeMidiFile.class);
     private static String pathToNewFile;

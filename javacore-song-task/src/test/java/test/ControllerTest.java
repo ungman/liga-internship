@@ -27,13 +27,13 @@ public class ControllerTest {
     @Test
     public void testBaseOperationClassIsAnalyze() {
         Controller controller = new Controller(rightArgsAnalyze);
-        assertThat(controller.classBaseOperation).isInstanceOf(AnalyzeMidiFile.class);
+        assertThat(controller.midiFileBaseOperationHelper).isInstanceOf(AnalyzeMidiFile.class);
     }
 
     @Test
     public void testBseOperationClassIsChange() {
         Controller controller = new Controller(getRightArgsChange);
-        assertThat(controller.classBaseOperation).isInstanceOf(ChangeMidiFile.class);
+        assertThat(controller.midiFileBaseOperationHelper).isInstanceOf(ChangeMidiFile.class);
     }
 
 

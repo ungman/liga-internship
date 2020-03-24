@@ -6,7 +6,7 @@ import com.leff.midi.event.MidiEvent;
 import com.leff.midi.event.NoteOn;
 import org.junit.Test;
 import ru.liga.songtask.domain.ChangeMidiFile;
-import ru.liga.songtask.util.FileOperation;
+import ru.liga.songtask.util.MidiFileBaseOperationHelper;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,8 +20,8 @@ public class ChangeMidiFileTest {
 
     @Test
     public void testGetInstance() {
-        FileOperation fileOperation = ChangeMidiFile.getInstance(new String[]{"", "", "-trans", "0", "-tempo", "0"}, "D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.mid");
-        assertThat(fileOperation).isInstanceOf(ChangeMidiFile.class);
+        MidiFileBaseOperationHelper midiFileBaseOperationHelper = ChangeMidiFile.getInstance(new String[]{"", "", "-trans", "0", "-tempo", "0"}, "D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.mid");
+        assertThat(midiFileBaseOperationHelper).isInstanceOf(ChangeMidiFile.class);
     }
 
     @Test(expected = RuntimeException.class)
@@ -45,7 +45,7 @@ public class ChangeMidiFileTest {
     @Test
     public void testChangeMidiFile() {
         String[] args = new String[]{"D:\\\\trash\\\\liga-internship\\\\javacore-song-task\\\\src\\\\main\\\\resources\\\\Belle.mid", "change", "-trans", "1", "-tempo", "0"};
-        FileOperation fileOperation = ChangeMidiFile.getInstance(args, args[0]);
+        MidiFileBaseOperationHelper midiFileBaseOperationHelper = ChangeMidiFile.getInstance(args, args[0]);
         MidiFile midiFile = null;
         try {
             midiFile = new MidiFile(new FileInputStream(args[0]));
@@ -54,8 +54,8 @@ public class ChangeMidiFileTest {
             e.printStackTrace();
         }
 
-        fileOperation.makeOperation();
-        List<MidiEvent> collectChanged = fileOperation.getMidiFile().getTracks().stream()
+        midiFileBaseOperationHelper.makeOperation();
+        List<MidiEvent> collectChanged = midiFileBaseOperationHelper.getMidiFile().getTracks().stream()
                 .flatMap(midiTrack -> midiTrack.getEvents().stream()
                         .filter(midiEvent -> midiEvent instanceof NoteOn)).collect(Collectors.toList());
 
