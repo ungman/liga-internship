@@ -1,7 +1,5 @@
 package ru.liga.songtask.domain;
 
-import com.leff.midi.event.NoteOn;
-
 /**
  * Created by bshestakov on 13.07.2017.
  * <p>

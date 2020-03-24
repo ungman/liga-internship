@@ -17,33 +17,35 @@ public class CheckerArgumentControllerTest {
     public void testCheckArguments() {
         CheckerArgumentController checkerArguments = CheckerArgumentController.getInstance();
         String[] rightArrArg = new String[]{"D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.mid", "analyze"};
-        assertThat(checkerArguments.checkTypeAction(rightArrArg)&&checkerArguments.checkCorrectPath(rightArrArg[0])).isTrue();
+        assertThat(checkerArguments.checkTypeAction(rightArrArg) && checkerArguments.checkCorrectPath(rightArrArg[0])).isTrue();
 
 
-        rightArrArg[0]="Wrong path";
+        rightArrArg[0] = "Wrong path";
         assertThat(checkerArguments.checkCorrectPath(rightArrArg[0])).isFalse();
     }
+
     @Test
-    public void testCheckType(){
+    public void testCheckType() {
         CheckerArgumentController checkerArguments = CheckerArgumentController.getInstance();
         String[] rightArrArg = new String[]{"\"D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.mid\"", "analyze"};
         assertThat(checkerArguments.checkTypeAction(rightArrArg)).isTrue();
-        rightArrArg[1]="change";
+        rightArrArg[1] = "change";
         assertThat(checkerArguments.checkTypeAction(rightArrArg)).isTrue();
 
-        rightArrArg[1]="wrong type";
+        rightArrArg[1] = "wrong type";
         assertThat(checkerArguments.checkTypeAction(rightArrArg)).isFalse();
     }
+
     @Test
-    public void testCheckPath(){
+    public void testCheckPath() {
         CheckerArgumentController checkerArguments = CheckerArgumentController.getInstance();
         String[] rightArrArg = new String[]{"D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.mid", "analyze"};
         assertThat(checkerArguments.checkCorrectPath(rightArrArg[0])).isTrue();
 
 
-        rightArrArg[0]="D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.midi";
+        rightArrArg[0] = "D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\resources\\Belle.midi";
         assertThat(checkerArguments.checkCorrectPath(rightArrArg[0])).isFalse();
-        rightArrArg[0]="D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\Belle.mid";
+        rightArrArg[0] = "D:\\trash\\liga-internship\\javacore-song-task\\src\\main\\Belle.mid";
         assertThat(checkerArguments.checkCorrectPath(rightArrArg[0])).isFalse();
     }
 

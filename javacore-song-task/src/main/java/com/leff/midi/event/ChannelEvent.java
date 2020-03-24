@@ -21,8 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-public class ChannelEvent extends MidiEvent
-{
+public class ChannelEvent extends MidiEvent {
     protected int mType;
     protected int mChannel;
     protected int mValue1;
@@ -30,13 +29,11 @@ public class ChannelEvent extends MidiEvent
 
     private static HashMap<Integer, Integer> mOrderMap;
 
-    protected ChannelEvent(long tick, int type, int channel, int param1, int param2)
-    {
+    protected ChannelEvent(long tick, int type, int channel, int param1, int param2) {
         this(tick, 0, type, channel, param1, param2);
     }
 
-    protected ChannelEvent(long tick, long delta, int type, int channel, int param1, int param2)
-    {
+    protected ChannelEvent(long tick, long delta, int type, int channel, int param1, int param2) {
         super(tick, delta);
 
         mType = type & 0x0F;
@@ -45,8 +42,7 @@ public class ChannelEvent extends MidiEvent
         mValue2 = param2 & 0xFF;
     }
 
-    public int getType()
-    {
+    public int getType() {
         return mType;
     }
 
@@ -61,28 +57,21 @@ public class ChannelEvent extends MidiEvent
     }
     //end change
 
-    public void setChannel(int c)
-    {
-        if(c < 0)
-        {
+    public void setChannel(int c) {
+        if (c < 0) {
             c = 0;
-        }
-        else if(c > 15)
-        {
+        } else if (c > 15) {
             c = 15;
         }
         mChannel = c;
     }
 
-    public int getChannel()
-    {
+    public int getChannel() {
         return mChannel;
     }
 
-    protected int getEventSize()
-    {
-        switch(mType)
-        {
+    protected int getEventSize() {
+        switch (mType) {
             case PROGRAM_CHANGE:
             case CHANNEL_AFTERTOUCH:
                 return 2;
@@ -92,27 +81,21 @@ public class ChannelEvent extends MidiEvent
     }
 
     @Override
-    public int compareTo(MidiEvent other)
-    {
-        if(mTick != other.getTick())
-        {
+    public int compareTo(MidiEvent other) {
+        if (mTick != other.getTick()) {
             return mTick < other.getTick() ? -1 : 1;
         }
-        if(mDelta.getValue() != other.mDelta.getValue())
-        {
+        if (mDelta.getValue() != other.mDelta.getValue()) {
             return mDelta.getValue() < other.mDelta.getValue() ? 1 : -1;
         }
 
-        if(!(other instanceof ChannelEvent))
-        {
+        if (!(other instanceof ChannelEvent)) {
             return 1;
         }
 
         ChannelEvent o = (ChannelEvent) other;
-        if(mType != o.getType())
-        {
-            if(mOrderMap == null)
-            {
+        if (mType != o.getType()) {
+            if (mOrderMap == null) {
                 buildOrderMap();
             }
 
@@ -121,30 +104,24 @@ public class ChannelEvent extends MidiEvent
 
             return order1 < order2 ? -1 : 1;
         }
-        if(mValue1 != o.mValue1)
-        {
+        if (mValue1 != o.mValue1) {
             return mValue1 < o.mValue1 ? -1 : 1;
         }
-        if(mValue2 != o.mValue2)
-        {
+        if (mValue2 != o.mValue2) {
             return mValue2 < o.mValue2 ? -1 : 1;
         }
-        if(mChannel != o.getChannel())
-        {
+        if (mChannel != o.getChannel()) {
             return mChannel < o.getChannel() ? -1 : 1;
         }
         return 0;
     }
 
     @Override
-    public boolean requiresStatusByte(MidiEvent prevEvent)
-    {
-        if(prevEvent == null)
-        {
+    public boolean requiresStatusByte(MidiEvent prevEvent) {
+        if (prevEvent == null) {
             return true;
         }
-        if(!(prevEvent instanceof ChannelEvent))
-        {
+        if (!(prevEvent instanceof ChannelEvent)) {
             return true;
         }
 
@@ -153,34 +130,28 @@ public class ChannelEvent extends MidiEvent
     }
 
     @Override
-    public void writeToFile(OutputStream out, boolean writeType) throws IOException
-    {
+    public void writeToFile(OutputStream out, boolean writeType) throws IOException {
         super.writeToFile(out, writeType);
 
-        if(writeType)
-        {
+        if (writeType) {
             int typeChannel = (mType << 4) + mChannel;
             out.write(typeChannel);
         }
 
         out.write(mValue1);
-        if(mType != PROGRAM_CHANGE && mType != CHANNEL_AFTERTOUCH)
-        {
+        if (mType != PROGRAM_CHANGE && mType != CHANNEL_AFTERTOUCH) {
             out.write(mValue2);
         }
     }
 
-    public static ChannelEvent parseChannelEvent(long tick, long delta, int type, int channel, InputStream in) throws IOException
-    {
+    public static ChannelEvent parseChannelEvent(long tick, long delta, int type, int channel, InputStream in) throws IOException {
         int val1 = in.read();
         int val2 = 0;
-        if(type != PROGRAM_CHANGE && type != CHANNEL_AFTERTOUCH)
-        {
+        if (type != PROGRAM_CHANGE && type != CHANNEL_AFTERTOUCH) {
             val2 = in.read();
         }
 
-        switch(type)
-        {
+        switch (type) {
             case NOTE_OFF:
                 return new NoteOff(tick, delta, channel, val1, val2);
             case NOTE_ON:
@@ -200,8 +171,7 @@ public class ChannelEvent extends MidiEvent
         }
     }
 
-    private static void buildOrderMap()
-    {
+    private static void buildOrderMap() {
 
         mOrderMap = new HashMap<Integer, Integer>();
 

@@ -16,41 +16,35 @@
 
 package com.leff.midi.event.meta;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import com.leff.midi.event.MidiEvent;
 import com.leff.midi.util.VariableLengthInt;
 
-public class SequenceNumber extends MetaEvent
-{
+import java.io.IOException;
+import java.io.OutputStream;
+
+public class SequenceNumber extends MetaEvent {
     private int mNumber;
 
-    public SequenceNumber(long tick, long delta, int number)
-    {
+    public SequenceNumber(long tick, long delta, int number) {
         super(tick, delta, MetaEvent.SEQUENCE_NUMBER, new VariableLengthInt(2));
 
         mNumber = number;
     }
 
-    public int getMostSignificantBits()
-    {
+    public int getMostSignificantBits() {
         return mNumber >> 8;
     }
 
-    public int getLeastSignificantBits()
-    {
+    public int getLeastSignificantBits() {
         return mNumber & 0xFF;
     }
 
-    public int getSequenceNumber()
-    {
+    public int getSequenceNumber() {
         return mNumber;
     }
 
     @Override
-    public void writeToFile(OutputStream out) throws IOException
-    {
+    public void writeToFile(OutputStream out) throws IOException {
         super.writeToFile(out);
 
         out.write(2);
@@ -58,10 +52,8 @@ public class SequenceNumber extends MetaEvent
         out.write(getLeastSignificantBits());
     }
 
-    public static MetaEvent parseSequenceNumber(long tick, long delta, MetaEventData info)
-    {
-        if(info.length.getValue() != 2)
-        {
+    public static MetaEvent parseSequenceNumber(long tick, long delta, MetaEventData info) {
+        if (info.length.getValue() != 2) {
             return new GenericMetaEvent(tick, delta, info);
         }
 
@@ -73,32 +65,26 @@ public class SequenceNumber extends MetaEvent
     }
 
     @Override
-    protected int getEventSize()
-    {
+    protected int getEventSize() {
         return 5;
     }
 
     @Override
-    public int compareTo(MidiEvent other)
-    {
-        if(mTick != other.getTick())
-        {
+    public int compareTo(MidiEvent other) {
+        if (mTick != other.getTick()) {
             return mTick < other.getTick() ? -1 : 1;
         }
-        if(mDelta.getValue() != other.getDelta())
-        {
+        if (mDelta.getValue() != other.getDelta()) {
             return mDelta.getValue() < other.getDelta() ? 1 : -1;
         }
 
-        if(!(other instanceof SequenceNumber))
-        {
+        if (!(other instanceof SequenceNumber)) {
             return 1;
         }
 
         SequenceNumber o = (SequenceNumber) other;
 
-        if(mNumber != o.mNumber)
-        {
+        if (mNumber != o.mNumber) {
             return mNumber < o.mNumber ? -1 : 1;
         }
         return 0;

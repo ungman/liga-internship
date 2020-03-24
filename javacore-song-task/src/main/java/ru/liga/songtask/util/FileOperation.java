@@ -2,6 +2,8 @@ package ru.liga.songtask.util;
 
 import com.leff.midi.MidiFile;
 import com.leff.midi.event.meta.Tempo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.liga.songtask.domain.Controller;
 
 import java.io.File;
@@ -10,7 +12,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public abstract class FileOperation {
-
+    public static final Logger logger = LoggerFactory.getLogger(FileOperation.class);
     private MidiFile midiFile;
     private Tempo tempo;
     private String pathToJar;
@@ -21,8 +23,7 @@ public abstract class FileOperation {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
-        Controller.logger.debug("Enter to {}", "FileOperation(String path,Logger logger)");
+        logger.debug("Enter to {}", "FileOperation(String path,Logger logger)");
         setMidiFile(path);
         setTempo();
 
@@ -33,11 +34,10 @@ public abstract class FileOperation {
     }
 
     private void setTempo() {
-        Controller.logger.debug("Enter to {}","setTempo");
+        logger.debug("Enter to {}", "setTempo");
         if (midiFile == null) {
             return;
         }
-
         tempo = (Tempo) midiFile.getTracks().stream()
                 .flatMap(midiTrack -> midiTrack.getEvents().stream())
                 .filter(midiEvent -> midiEvent instanceof Tempo)
@@ -50,14 +50,14 @@ public abstract class FileOperation {
     }
 
     private void setMidiFile(String path) {
-        Controller.logger.debug("Enter to {}","setMidiFile");
+        Controller.logger.debug("Enter to {}", "setMidiFile");
         try {
             midiFile = new MidiFile(new FileInputStream(path));
         } catch (IOException e) {
 //            e.printStackTrace();
-            Controller.logger.info("Cant open file on path: {}",path);
+            Controller.logger.info("Cant open file on path: {}", path);
             Controller.logger.debug(e.getMessage());
-            throw new RuntimeException("Cant open file on path: "+path);
+            throw new RuntimeException("Cant open file on path: " + path);
         }
     }
 

@@ -3,6 +3,8 @@ package ru.liga.songtask.domain;
 import com.leff.midi.MidiTrack;
 import com.leff.midi.event.MidiEvent;
 import com.leff.midi.event.meta.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.liga.songtask.util.AnalyzeMidFile;
 
 import java.util.*;
@@ -12,29 +14,26 @@ import java.util.stream.Collectors;
 
 public class AnalyzeMidiFileWithTextEvent implements AnalyzeMidFile {
 
+    public static final Logger logger = LoggerFactory.getLogger(AnalyzeMidiFileWithTextEvent.class);
     public int coff;
     public List<MidiTrack> listTrack;
     private Predicate<MidiEvent> predicateFindTextEvent;
 
     public AnalyzeMidiFileWithTextEvent(int coff, Predicate<MidiEvent> predicateFindTextEvent) {
-        Controller.logger.debug("Enter to {} ", " AnalyzeMidiFileWithTextEvent(int , Predicate<MidiEvent> )");
+        logger.debug("Enter to {} ", " AnalyzeMidiFileWithTextEvent(int , Predicate<MidiEvent> )");
         this.coff = coff;
         this.predicateFindTextEvent = predicateFindTextEvent;
     }
 
     @Override
     public List<MidiTrack> getTracks(Map<MidiTrack, List<Note>> mapMidiTracksListNotes) {
-        Controller.logger.debug("Enter to {} ", "getTracks");
+        logger.debug("Enter to {} ", "getTracks");
         if (listTrack != null)
             return listTrack;
         List<MidiTrack> listTrackWithTextNote = new ArrayList<>();
-
         listTrackWithTextNote = findTracksWithConditionFromMidFile(mapMidiTracksListNotes, predicateFindTextEvent);
-
         List<MidiTrack> midiTrackListLikeHumanFromTextEvents = new ArrayList<>();
-
         for (MidiTrack midiTrack1 : listTrackWithTextNote) {
-
             TreeSet<MidiEvent> listMidiEvent = midiTrack1.getEvents();
             for (Map.Entry<MidiTrack, List<Note>> midiTrackListNoteEntry : mapMidiTracksListNotes.entrySet()) {
                 boolean isTrackLikeHuman = true;
@@ -52,7 +51,6 @@ public class AnalyzeMidiFileWithTextEvent implements AnalyzeMidFile {
                 } else {
                     isTrackLikeHuman = false;
                 }
-
                 if (isTrackLikeHuman) {
                     midiTrackListLikeHumanFromTextEvents.add(midiTrackListNoteEntry.getKey());
                 }
@@ -68,7 +66,7 @@ public class AnalyzeMidiFileWithTextEvent implements AnalyzeMidFile {
     }
 
     private List<MidiTrack> findTracksWithConditionFromMidFile(Map<MidiTrack, List<Note>> mapMidiTracksListNot, Predicate<MidiEvent> condition) {
-        Controller.logger.debug("Enter to {} ", "findTracksWithConditionFromMidFile");
+        logger.debug("Enter to {} ", "findTracksWithConditionFromMidFile");
         return mapMidiTracksListNot.keySet().stream().
                 filter(midiTrack -> midiTrack.getEvents().stream()
                         .anyMatch(condition))

@@ -2,6 +2,8 @@ package ru.liga.songtask.domain;
 
 import com.leff.midi.MidiTrack;
 import com.leff.midi.event.MidiEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.liga.songtask.util.AnalyzeMidFile;
 
 import java.util.ArrayList;
@@ -11,30 +13,29 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+
 public class AnalyzeFileWithLyricsEvent implements AnalyzeMidFile {
 
+    public static final Logger logger = LoggerFactory.getLogger(AnalyzeFileWithLyricsEvent.class);
     public int coff;
     public List<MidiTrack> listTrack;
     private Predicate<MidiEvent> predicateFindLyricsEvent;
 
     public AnalyzeFileWithLyricsEvent(int coff, Predicate<MidiEvent> predicateFindLyricsEvent) {
-        Controller.logger.debug("Enter to {} ", "AnalyzeFileWithLyricsEvent(int, Predicate<MidiEvent>)");
+        logger.debug("Enter to {} ", "AnalyzeFileWithLyricsEvent(int, Predicate<MidiEvent>)");
         this.coff = coff;
         this.predicateFindLyricsEvent = predicateFindLyricsEvent;
     }
 
     @Override
     public List<MidiTrack> getTracks(Map<MidiTrack, List<Note>> mapMidiTracksListNote) {
-        Controller.logger.debug("Enter to {} ", "getTracks");
+        logger.debug("Enter to {} ", "getTracks");
         if (listTrack != null)
             return listTrack;
-
         Controller.logger.debug("Enter to {}", "getTrackLikeVoiceLyrics");
         List<MidiTrack> ListTrackLikeHumanFromLyricsEvent = new ArrayList<>();
         List<MidiTrack> listTrackWithLyricsNote = new ArrayList<>();
-
         listTrackWithLyricsNote = findTracksWithConditionFromMidFile(mapMidiTracksListNote, predicateFindLyricsEvent);
-
         List<MidiTrack> finalAddCondition = listTrackWithLyricsNote;
         ListTrackLikeHumanFromLyricsEvent = mapMidiTracksListNote.keySet().stream()
                 .filter(entry -> finalAddCondition.stream().anyMatch(midiTrack -> midiTrack.equals(entry)))
@@ -50,7 +51,7 @@ public class AnalyzeFileWithLyricsEvent implements AnalyzeMidFile {
     }
 
     private List<MidiTrack> findTracksWithConditionFromMidFile(Map<MidiTrack, List<Note>> mapMidiTracksListNot, Predicate<MidiEvent> condition) {
-        Controller.logger.debug("Enter to {} ", "findTracksWithConditionFromMidFile");
+        logger.debug("Enter to {} ", "findTracksWithConditionFromMidFile");
         return mapMidiTracksListNot.keySet().stream().
                 filter(midiTrack -> midiTrack.getEvents().stream()
                         .anyMatch(condition))

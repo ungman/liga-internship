@@ -74,7 +74,6 @@ public class SongUtils {
     }
 
     public static void playTrack(String path) throws Exception {
-
         File midiFile = new File(path);
         Sequencer sequencer = MidiSystem.getSequencer();
         sequencer.setSequence(MidiSystem.getSequence(midiFile));
@@ -84,7 +83,7 @@ public class SongUtils {
             if (sequencer.isRunning()) {
                 System.out.println("isPLaying");
                 try {
-                    Thread.sleep(1000); // Check every second
+                    Thread.sleep(1000);
                 } catch (InterruptedException ignore) {
                     break;
                 }
@@ -92,11 +91,9 @@ public class SongUtils {
                 break;
             }
         }
-        // Close the MidiDevice & free resources
         sequencer.stop();
         sequencer.close();
 
     }
-
 
 }

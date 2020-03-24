@@ -16,19 +16,18 @@
 
 package com.leff.midi.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import com.leff.midi.MidiFile;
 import com.leff.midi.MidiTrack;
 import com.leff.midi.event.MidiEvent;
 import com.leff.midi.event.meta.Tempo;
 import com.leff.midi.event.meta.TimeSignature;
 
-public class MidiProcessor
-{
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+public class MidiProcessor {
     private static final int PROCESS_RATE_MS = 8;
 
     private HashMap<Class<? extends MidiEvent>, List<MidiEventListener>> mEventsToListeners;
@@ -45,8 +44,7 @@ public class MidiProcessor
     private MetronomeTick mMetronome;
     private MidiTrackEventQueue[] mEventQueues;
 
-    public MidiProcessor(MidiFile input)
-    {
+    public MidiProcessor(MidiFile input) {
 
         mMidiFile = input;
 
@@ -61,28 +59,23 @@ public class MidiProcessor
         this.reset();
     }
 
-    public synchronized void start()
-    {
-        if(mRunning)
+    public synchronized void start() {
+        if (mRunning)
             return;
 
         mRunning = true;
-        new Thread(new Runnable()
-        {
-            public void run()
-            {
+        new Thread(new Runnable() {
+            public void run() {
                 process();
             }
         }).start();
     }
 
-    public void stop()
-    {
+    public void stop() {
         mRunning = false;
     }
 
-    public void reset()
-    {
+    public void reset() {
 
         mRunning = false;
         mTicksElapsed = 0;
@@ -92,94 +85,76 @@ public class MidiProcessor
 
         List<MidiTrack> tracks = mMidiFile.getTracks();
 
-        if(mEventQueues == null)
-        {
+        if (mEventQueues == null) {
             mEventQueues = new MidiTrackEventQueue[tracks.size()];
         }
 
-        for(int i = 0; i < tracks.size(); i++)
-        {
+        for (int i = 0; i < tracks.size(); i++) {
             mEventQueues[i] = new MidiTrackEventQueue(tracks.get(i));
         }
     }
 
-    public boolean isStarted()
-    {
+    public boolean isStarted() {
         return mTicksElapsed > 0;
     }
 
-    public boolean isRunning()
-    {
+    public boolean isRunning() {
         return mRunning;
     }
 
-    protected void onStart(boolean fromBeginning)
-    {
+    protected void onStart(boolean fromBeginning) {
 
         Iterator<MidiEventListener> it = mListenersToEvents.keySet().iterator();
 
-        while(it.hasNext())
-        {
+        while (it.hasNext()) {
 
             MidiEventListener mel = it.next();
             mel.onStart(fromBeginning);
         }
     }
 
-    protected void onStop(boolean finished)
-    {
+    protected void onStop(boolean finished) {
 
         Iterator<MidiEventListener> it = mListenersToEvents.keySet().iterator();
 
-        while(it.hasNext())
-        {
+        while (it.hasNext()) {
 
             MidiEventListener mel = it.next();
             mel.onStop(finished);
         }
     }
 
-    public void registerEventListener(MidiEventListener mel, Class<? extends MidiEvent> event)
-    {
+    public void registerEventListener(MidiEventListener mel, Class<? extends MidiEvent> event) {
 
         List<MidiEventListener> listeners = mEventsToListeners.get(event);
-        if(listeners == null)
-        {
+        if (listeners == null) {
 
             listeners = new ArrayList<MidiEventListener>();
             listeners.add(mel);
             mEventsToListeners.put(event, listeners);
-        }
-        else
-        {
+        } else {
             listeners.add(mel);
         }
 
         List<Class<? extends MidiEvent>> events = mListenersToEvents.get(mel);
-        if(events == null)
-        {
+        if (events == null) {
 
             events = new ArrayList<Class<? extends MidiEvent>>();
             events.add(event);
             mListenersToEvents.put(mel, events);
-        }
-        else
-        {
+        } else {
             events.add(event);
         }
     }
 
-    public void unregisterEventListener(MidiEventListener mel)
-    {
+    public void unregisterEventListener(MidiEventListener mel) {
 
         List<Class<? extends MidiEvent>> events = mListenersToEvents.get(mel);
-        if(events == null)
-        {
+        if (events == null) {
             return;
         }
 
-        for(Class<? extends MidiEvent> event : events)
-        {
+        for (Class<? extends MidiEvent> event : events) {
 
             List<MidiEventListener> listeners = mEventsToListeners.get(event);
             listeners.remove(mel);
@@ -188,44 +163,35 @@ public class MidiProcessor
         mListenersToEvents.remove(mel);
     }
 
-    public void unregisterEventListener(MidiEventListener mel, Class<? extends MidiEvent> event)
-    {
+    public void unregisterEventListener(MidiEventListener mel, Class<? extends MidiEvent> event) {
 
         List<MidiEventListener> listeners = mEventsToListeners.get(event);
-        if(listeners != null)
-        {
+        if (listeners != null) {
             listeners.remove(mel);
         }
 
         List<Class<? extends MidiEvent>> events = mListenersToEvents.get(mel);
-        if(events != null)
-        {
+        if (events != null) {
             events.remove(event);
         }
     }
 
-    public void unregisterAllEventListeners()
-    {
+    public void unregisterAllEventListeners() {
         mEventsToListeners.clear();
         mListenersToEvents.clear();
     }
 
-    protected void dispatch(MidiEvent event)
-    {
+    protected void dispatch(MidiEvent event) {
 
         // Tempo and Time Signature events are always needed by the processor
-        if(event.getClass().equals(Tempo.class))
-        {
+        if (event.getClass().equals(Tempo.class)) {
             mMPQN = ((Tempo) event).getMpqn();
-        }
-        else if(event.getClass().equals(TimeSignature.class))
-        {
+        } else if (event.getClass().equals(TimeSignature.class)) {
 
             boolean shouldDispatch = mMetronome.getBeatNumber() != 1;
             mMetronome.setTimeSignature((TimeSignature) event);
 
-            if(shouldDispatch)
-            {
+            if (shouldDispatch) {
                 dispatch(mMetronome);
             }
         }
@@ -234,24 +200,20 @@ public class MidiProcessor
         this.sendOnEventForClass(event, MidiEvent.class);
     }
 
-    private void sendOnEventForClass(MidiEvent event, Class<? extends MidiEvent> eventClass)
-    {
+    private void sendOnEventForClass(MidiEvent event, Class<? extends MidiEvent> eventClass) {
 
         List<MidiEventListener> listeners = mEventsToListeners.get(eventClass);
 
-        if(listeners == null)
-        {
+        if (listeners == null) {
             return;
         }
 
-        for(MidiEventListener mel : listeners)
-        {
+        for (MidiEventListener mel : listeners) {
             mel.onEvent(event, mMsElapsed);
         }
     }
 
-    private void process()
-    {
+    private void process() {
 
         onStart(mTicksElapsed < 1);
 
@@ -259,33 +221,26 @@ public class MidiProcessor
 
         boolean finished = false;
 
-        while(mRunning)
-        {
+        while (mRunning) {
 
             long now = System.currentTimeMillis();
             long msElapsed = now - lastMs;
 
-            if(msElapsed < PROCESS_RATE_MS)
-            {
-                try
-                {
+            if (msElapsed < PROCESS_RATE_MS) {
+                try {
                     Thread.sleep(PROCESS_RATE_MS - msElapsed);
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                 }
                 continue;
             }
 
             double ticksElapsed = MidiUtil.msToTicks(msElapsed, mMPQN, mPPQ);
 
-            if(ticksElapsed < 1)
-            {
+            if (ticksElapsed < 1) {
                 continue;
             }
 
-            if(mMetronome.update(ticksElapsed))
-            {
+            if (mMetronome.update(ticksElapsed)) {
                 dispatch(mMetronome);
             }
 
@@ -294,29 +249,24 @@ public class MidiProcessor
             mTicksElapsed += ticksElapsed;
 
             boolean more = false;
-            for(int i = 0; i < mEventQueues.length; i++)
-            {
+            for (int i = 0; i < mEventQueues.length; i++) {
 
                 MidiTrackEventQueue queue = mEventQueues[i];
-                if(!queue.hasMoreEvents())
-                {
+                if (!queue.hasMoreEvents()) {
                     continue;
                 }
 
                 ArrayList<MidiEvent> events = queue.getNextEventsUpToTick(mTicksElapsed);
-                for(MidiEvent event : events)
-                {
+                for (MidiEvent event : events) {
                     this.dispatch(event);
                 }
 
-                if(queue.hasMoreEvents())
-                {
+                if (queue.hasMoreEvents()) {
                     more = true;
                 }
             }
 
-            if(!more)
-            {
+            if (!more) {
                 finished = true;
                 break;
             }
@@ -326,51 +276,40 @@ public class MidiProcessor
         onStop(finished);
     }
 
-    private class MidiTrackEventQueue
-    {
+    private class MidiTrackEventQueue {
 
         private MidiTrack mTrack;
         private Iterator<MidiEvent> mIterator;
         private ArrayList<MidiEvent> mEventsToDispatch;
         private MidiEvent mNext;
 
-        public MidiTrackEventQueue(MidiTrack track)
-        {
+        public MidiTrackEventQueue(MidiTrack track) {
 
             mTrack = track;
 
             mIterator = mTrack.getEvents().iterator();
             mEventsToDispatch = new ArrayList<MidiEvent>();
 
-            if(mIterator.hasNext())
-            {
+            if (mIterator.hasNext()) {
                 mNext = mIterator.next();
             }
         }
 
-        public ArrayList<MidiEvent> getNextEventsUpToTick(double tick)
-        {
+        public ArrayList<MidiEvent> getNextEventsUpToTick(double tick) {
 
             mEventsToDispatch.clear();
 
-            while(mNext != null)
-            {
+            while (mNext != null) {
 
-                if(mNext.getTick() <= tick)
-                {
+                if (mNext.getTick() <= tick) {
                     mEventsToDispatch.add(mNext);
 
-                    if(mIterator.hasNext())
-                    {
+                    if (mIterator.hasNext()) {
                         mNext = mIterator.next();
-                    }
-                    else
-                    {
+                    } else {
                         mNext = null;
                     }
-                }
-                else
-                {
+                } else {
                     break;
                 }
             }
@@ -378,8 +317,7 @@ public class MidiProcessor
             return mEventsToDispatch;
         }
 
-        public boolean hasMoreEvents()
-        {
+        public boolean hasMoreEvents() {
             return mNext != null;
         }
     }
